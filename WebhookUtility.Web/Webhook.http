@@ -1,0 +1,17 @@
+﻿@file = test1
+@port= 8080
+
+###
+GET http://localhost:{{port}}/webhook/{{file}}
+
+###
+POST http://localhost:{{port}}/webhook/{{file}}
+Content-Type: application/json
+
+{
+    "FirstName": "Boris",
+    "LastName": "Bošković"
+}
+
+###
+DELETE http://localhost:{{port}}/webhook/{{file}}
