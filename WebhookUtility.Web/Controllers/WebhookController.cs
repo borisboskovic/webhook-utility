@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace WebhookUtility.Web.Controllers;
 
 [ApiController]
-[Route("/webhook/{file}")]
+[Route("webhook")]
 public class WebhookController : ControllerBase
 {
     private const string DirName = "data";
@@ -17,7 +17,15 @@ public class WebhookController : ControllerBase
 
     private static string GetFilePath(string filename) => $"{DirName}{Path.DirectorySeparatorChar}{filename}.json";
 
-    [HttpGet]
+    [HttpGet("list")]
+    public IActionResult List()
+    {
+        CreateDirectoryIfDoesNotExists();
+        var files = Directory.GetFiles(DirName).Select(x => x.Replace("data\\", ""));
+        return Ok(files);
+    }
+
+    [HttpGet("{file}")]
     public async Task<IActionResult> Get(string file)
     {
         var path = GetFilePath(file);
@@ -30,7 +38,7 @@ public class WebhookController : ControllerBase
         return Ok(content);
     }
 
-    [HttpPost]
+    [HttpPost("{file}")]
     public async Task<IActionResult> Post(string file, [FromBody] dynamic payload)
     {
         var path = GetFilePath(file);
@@ -52,16 +60,12 @@ public class WebhookController : ControllerBase
         return Ok();
     }
 
-    [HttpDelete]
-    public async Task<ActionResult> Delete(string file)
+    [HttpDelete("{file}")]
+    public ActionResult Delete(string file)
     {
         var path = GetFilePath(file);
-
         CreateDirectoryIfDoesNotExists();
-        await CreateFileIfDoesNotExists(path);
-
-        await System.IO.File.WriteAllTextAsync(path, "[]");
-
+        DeleteFileIfExists(path);
         return Ok();
     }
 
@@ -78,6 +82,14 @@ public class WebhookController : ControllerBase
         if (!System.IO.File.Exists(path))
         {
             await System.IO.File.WriteAllTextAsync(path, "[]");
+        }
+    }
+
+    private static void DeleteFileIfExists(string path)
+    {
+        if (System.IO.File.Exists(path))
+        {
+            System.IO.File.Delete(path);
         }
     }
 }
