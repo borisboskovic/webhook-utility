@@ -15,10 +15,12 @@ public class WebhookController : ControllerBase
         WriteIndented = true
     };
 
+    private static string GetFilePath(string filename) => $"{DirName}{Path.DirectorySeparatorChar}{filename}.json";
+
     [HttpGet]
     public async Task<IActionResult> Get(string file)
     {
-        var path = $"{DirName}\\{file}.json";
+        var path = GetFilePath(file);
 
         CreateDirectoryIfDoesNotExists();
         await CreateFileIfDoesNotExists(path);
@@ -31,7 +33,7 @@ public class WebhookController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Post(string file, [FromBody] dynamic payload)
     {
-        var path = $"{DirName}\\{file}.json";
+        var path = GetFilePath(file);
 
         CreateDirectoryIfDoesNotExists();
         await CreateFileIfDoesNotExists(path);
@@ -53,7 +55,7 @@ public class WebhookController : ControllerBase
     [HttpDelete]
     public async Task<ActionResult> Delete(string file)
     {
-        var path = $"{DirName}\\{file}.json";
+        var path = GetFilePath(file);
 
         CreateDirectoryIfDoesNotExists();
         await CreateFileIfDoesNotExists(path);
